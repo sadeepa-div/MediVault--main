@@ -12,10 +12,13 @@ import {
 
 import "./Dashboard.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
+const API_URL = (import.meta.env.VITE_API_URL || "/api")
+  .replace(/\\/g, "/")
+  .replace(/\/$/, "");
 
 function Dashboard() {
   const [user, setUser] = useState(null);
+  const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
@@ -30,7 +33,7 @@ function Dashboard() {
       }
 
       try {
-        const response = await fetch(`${API_URL}/api/auth/me`, {
+        const response = await fetch(`${API_URL}/auth/me`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -49,6 +52,16 @@ function Dashboard() {
         }
 
         setUser(data.user);
+
+        const statsResponse = await fetch(`${API_URL}/medicines/stats`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (statsResponse.ok) {
+          setStats(await statsResponse.json());
+        }
       } catch (error) {
         console.error(error);
       } finally {
@@ -146,8 +159,8 @@ function Dashboard() {
 
             <div>
               <p>Total Medicines</p>
-              <h2>—</h2>
-              <span>Connect medicine database next</span>
+              <h2>{stats?.totalMedicines ?? "—"}</h2>
+              <span>Registered in MediVault</span>
             </div>
           </div>
 
@@ -158,8 +171,8 @@ function Dashboard() {
 
             <div>
               <p>Available Medicines</p>
-              <h2>—</h2>
-              <span>Stock information</span>
+              <h2>{stats?.availableMedicines ?? "—"}</h2>
+              <span>With available stock</span>
             </div>
           </div>
 
@@ -170,7 +183,7 @@ function Dashboard() {
 
             <div>
               <p>Pharmacies</p>
-              <h2>—</h2>
+              <h2>{stats?.totalPharmacies ?? "—"}</h2>
               <span>Registered pharmacies</span>
             </div>
           </div>

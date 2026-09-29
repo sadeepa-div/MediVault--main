@@ -16,7 +16,7 @@ import "./AuthPage.css";
 
 import { GoogleLogin } from "@react-oauth/google";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
+const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -74,7 +74,7 @@ function AuthPage() {
     try {
       setLoading(true);
 
-      const response = await fetch(`${API_URL}/api/auth/register`, {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: "POST",
 
         headers: {
@@ -136,7 +136,7 @@ function AuthPage() {
     try {
       setLoading(true);
 
-      const response = await fetch(`${API_URL}/api/auth/login`, {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
 
         headers: {
@@ -197,7 +197,7 @@ function AuthPage() {
       setLoading(true);
       setMessage("");
 
-      const response = await fetch(`${API_URL}/api/auth/google`, {
+      const response = await fetch(`${API_URL}/auth/google`, {
         method: "POST",
 
         headers: {
@@ -244,7 +244,7 @@ function AuthPage() {
   // ----------------------------
 
   const handleFacebookLogin = () => {
-    window.location.href = `${API_URL}/api/auth/facebook`;
+    window.location.href = `${API_URL}/auth/facebook`;
   };
 
   const changeMode = (loginMode) => {

@@ -5,6 +5,7 @@ const router = express.Router();
 const {
   getAllMedicines,
   searchMedicines,
+  getDashboardStats,
   addMedicine,
   updateMedicine,
   deleteMedicine
@@ -28,6 +29,12 @@ router.get(
   "/search",
   authMiddleware,
   searchMedicines
+);
+
+router.get(
+  "/stats",
+  authMiddleware,
+  getDashboardStats
 );
 
 
