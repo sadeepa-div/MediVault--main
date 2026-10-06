@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 const {
+  getMedicineSummary,
   getAllMedicines,
   searchMedicines,
   addMedicine,
@@ -18,6 +19,12 @@ const adminMiddleware =
 
 
 // Logged-in users
+router.get(
+  "/summary",
+  authMiddleware,
+  getMedicineSummary
+);
+
 router.get(
   "/",
   authMiddleware,

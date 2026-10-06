@@ -1,5 +1,30 @@
 const db = require("../config/db");
 
+const getMedicineSummary = (req, res) => {
+  const sql = `
+    SELECT
+      (SELECT COUNT(*) FROM medicines) AS totalMedicines,
+      (
+        SELECT COUNT(DISTINCT medicine_id)
+        FROM pharmacy_stock
+        WHERE quantity > 0
+      ) AS availableMedicines,
+      (SELECT COUNT(*) FROM pharmacies) AS pharmacies
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error("Could not load medicine summary:", err);
+
+      return res.status(500).json({
+        message: "Could not load dashboard summary",
+      });
+    }
+
+    res.status(200).json(results[0]);
+  });
+};
+
 // GET ALL MEDICINES
 const getAllMedicines = (req, res) => {
   const sql = `
@@ -224,6 +249,7 @@ const deleteMedicine = (req, res) => {
 };
 
 module.exports = {
+  getMedicineSummary,
   getAllMedicines,
   searchMedicines,
   addMedicine,

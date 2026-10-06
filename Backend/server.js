@@ -1,39 +1,47 @@
-const medicineRoutes =
-  require("./routes/medicineRoutes");
-  const express = require("express");
+console.log("NEW MEDIVAULT SERVER FILE RUNNING");
+const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 
 const db = require("./config/db");
+
 const authRoutes = require("./routes/authRoutes");
+const medicineRoutes = require("./routes/medicineRoutes");
 
 const app = express();
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
+// Test route
 app.get("/", (req, res) => {
-  res.send("MediVault Backend is running!");
+  res.json({
+    message: "MediVault Backend is running!"
+  });
 });
 
-// Authentication routes
+// Routes
 app.use("/api/auth", authRoutes);
-app.use(
-  "/api/medicines",
-  medicineRoutes
-);
+app.use("/api/medicines", medicineRoutes);
 
-// Test MySQL connection
+// Start serving only after the database is reachable.
 db.query("SELECT 1", (err) => {
   if (err) {
     console.error("MySQL connection failed:", err.message);
-  } else {
-    console.log("MySQL connected successfully!");
+    db.end((closeErr) => {
+      if (closeErr) {
+        console.error("Failed to close MySQL pool:", closeErr.message);
+      }
+      process.exitCode = 1;
+    });
+    return;
   }
-});
 
-const PORT = process.env.PORT || 5001;
+  console.log("MySQL connected successfully!");
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  const PORT = process.env.PORT || 5001;
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
 });
