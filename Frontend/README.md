@@ -14,7 +14,7 @@ npm run build    # production build in dist/
 The app starts in **demo mode** with built-in sample data, so you can work on the UI before the backend exists.
 Demo sign-in: `demo@medivault.lk` / `demo123`.
 
-To use the real backend, copy `.env.example` to `.env` (it sets `VITE_USE_MOCK=false`) and start the Express server on port 5000.
+To use the real backend, copy `.env.example` to `.env` (it sets `VITE_USE_MOCK=false`) and start the Express server on port 5001.
 The Vite dev server proxies `/api` to it.
 
 ## Pages
@@ -45,7 +45,7 @@ Send the JWT as `Authorization: Bearer <token>`. Errors should return JSON like 
 
 ## Docker and CI
 
-- `Dockerfile` builds the app and serves it with nginx. `nginx.conf` forwards `/api` to a compose service named `backend` on port 5000.
+- `Dockerfile` builds the app and serves it with nginx. `nginx.conf` forwards `/api` to a compose service named `backend` on port 5001.
 - `.github/workflows/frontend-ci.yml` runs tests and a build on every push and pull request.
   It expects this project to live in a `frontend/` folder of your repo, with `.github/` moved to the repo root.
   Run `npm install` once and commit `package-lock.json` so `npm ci` works.

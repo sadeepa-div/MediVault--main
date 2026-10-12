@@ -1,5 +1,6 @@
 import { CATEGORIES, MY_PHARMACY, PHARMACIES, seedItems } from './mockData.js';
 import { demoCatalogue } from './demoCatalogue.js';
+import { readAuthToken } from './session.js';
 
 export const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false';
 const BASE = import.meta.env.VITE_API_URL || '/api';
@@ -7,7 +8,7 @@ const BASE = import.meta.env.VITE_API_URL || '/api';
 /* ---------- Real API (Express + MySQL backend) ---------- */
 async function request(path, { method = 'GET', body } = {}) {
   const headers = { 'Content-Type': 'application/json' };
-  const token = localStorage.getItem('mv_token');
+  const token = readAuthToken();
   if (token) headers.Authorization = `Bearer ${token}`;
 
   const res = await fetch(`${BASE}${path}`, {
@@ -19,6 +20,8 @@ async function request(path, { method = 'GET', body } = {}) {
   if (res.status === 401 && path !== '/auth/login') {
     localStorage.removeItem('mv_token');
     localStorage.removeItem('mv_user');
+    localStorage.removeItem('medivault_token');
+    localStorage.removeItem('medivault_user');
     window.location.assign('/login');
   }
   if (!res.ok) {

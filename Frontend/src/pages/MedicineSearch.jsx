@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { clearAuthSession, readAuthToken } from "../session";
 import {
   FaSearch,
   FaArrowLeft,
@@ -14,7 +15,7 @@ import "./MedicineSearch.css";
 
 const API_URL =
   import.meta.env.VITE_API_URL ||
-  "http://localhost:5000";
+  "/api";
 
 function MedicineSearch() {
   const navigate = useNavigate();
@@ -33,8 +34,7 @@ function MedicineSearch() {
       return;
     }
 
-    const token =
-      localStorage.getItem("medivault_token");
+    const token = readAuthToken();
 
     if (!token) {
       navigate("/");
@@ -46,7 +46,7 @@ function MedicineSearch() {
       setMessage("");
 
       const response = await fetch(
-        `${API_URL}/api/medicines/search?q=${encodeURIComponent(
+        `${API_URL}/medicines/search?q=${encodeURIComponent(
           search
         )}`,
         {
@@ -60,14 +60,7 @@ function MedicineSearch() {
 
       if (!response.ok) {
         if (response.status === 401) {
-          localStorage.removeItem(
-            "medivault_token"
-          );
-
-          localStorage.removeItem(
-            "medivault_user"
-          );
-
+          clearAuthSession();
           navigate("/");
           return;
         }

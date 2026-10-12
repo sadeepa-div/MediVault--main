@@ -7,7 +7,8 @@ const db = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
 const medicineRoutes = require("./routes/medicineRoutes");
-
+const pharmacyRoutes = require("./routes/pharmacyRoutes");
+const stockRoutes = require("./routes/stockRoutes");
 const app = express();
 
 // Middleware
@@ -17,14 +18,15 @@ app.use(express.json());
 // Test route
 app.get("/", (req, res) => {
   res.json({
-    message: "MediVault Backend is running!"
+    message: "MediVault Backend is running!",
   });
 });
 
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/medicines", medicineRoutes);
-
+app.use("/api/pharmacies", pharmacyRoutes);
+app.use("/api/stock", stockRoutes);
 // Start serving only after the database is reachable.
 db.query("SELECT 1", (err) => {
   if (err) {

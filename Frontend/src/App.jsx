@@ -5,6 +5,10 @@ import Dashboard from "./pages/Dashboard";
 import MedicineSearch from "./pages/MedicineSearch";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import MedicineManagement from "./pages/MedicineManagement";
+
+import AdminRoute from "./components/AdminRoute";
+import PharmacyManagement from "./pages/PharmacyManagement";
 
 function App() {
   return (
@@ -26,6 +30,28 @@ function App() {
           element={
             <ProtectedRoute>
               <MedicineSearch />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/medicine-management"
+          element={
+            <ProtectedRoute>
+              <AdminRoute>
+                <MedicineManagement />
+              </AdminRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/pharmacy-management"
+          element={
+            <ProtectedRoute>
+              <AdminRoute>
+                <PharmacyManagement />
+              </AdminRoute>
             </ProtectedRoute>
           }
         />

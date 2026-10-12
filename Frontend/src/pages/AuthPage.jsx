@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   FaGoogle,
   FaFacebookF,
@@ -15,10 +16,15 @@ import {
 import "./AuthPage.css";
 
 import { GoogleLogin } from "@react-oauth/google";
+import { USE_MOCK } from "../api";
+import { writeAuthSession } from "../session";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
+const API_URL = import.meta.env.VITE_API_URL || "/api";
+const DEMO_EMAIL = "demo@medivault.lk";
+const DEMO_PASSWORD = "demo123";
 
 function AuthPage() {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
 
   const [formData, setFormData] = useState({
@@ -74,7 +80,7 @@ function AuthPage() {
     try {
       setLoading(true);
 
-      const response = await fetch(`${API_URL}/api/auth/register`, {
+      const response = await fetch(`${API_URL}/auth/register`, {
         method: "POST",
 
         headers: {
@@ -128,15 +134,41 @@ function AuthPage() {
   // ----------------------------
 
   const handleLogin = async () => {
-    if (!formData.email || !formData.password) {
+    const email = formData.email.trim();
+    const password = formData.password;
+
+    if (!email || !password) {
       showMessage("Please enter your email and password.", "error");
+      return;
+    }
+
+    const isDemoLogin =
+      USE_MOCK &&
+      email.toLowerCase() === DEMO_EMAIL &&
+      password === DEMO_PASSWORD;
+
+    if (isDemoLogin) {
+      const demoUser = {
+        id: 1,
+        fullName: "Nimal Perera",
+        email: DEMO_EMAIL,
+        role: "pharmacist",
+      };
+
+      writeAuthSession("demo-token", demoUser);
+      showMessage("Login successful!", "success");
+
+      setTimeout(() => {
+        navigate("/dashboard", { replace: true });
+      }, 800);
+
       return;
     }
 
     try {
       setLoading(true);
 
-      const response = await fetch(`${API_URL}/api/auth/login`, {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
 
         headers: {
@@ -144,8 +176,8 @@ function AuthPage() {
         },
 
         body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
+          email,
+          password,
         }),
       });
 
@@ -159,20 +191,19 @@ function AuthPage() {
       showMessage("Login successful!", "success");
 
       if (data.token) {
-        localStorage.setItem("medivault_token", data.token);
-      }
-
-      if (data.user) {
-        localStorage.setItem("medivault_user", JSON.stringify(data.user));
+        writeAuthSession(data.token, data.user);
       }
 
       setTimeout(() => {
-        window.location.href = "/dashboard";
+        navigate("/dashboard", { replace: true });
       }, 800);
     } catch (error) {
       console.error(error);
 
-      showMessage("Login backend is not ready yet.", "error");
+      showMessage(
+        "Unable to connect to the server. Please check the backend connection and try again.",
+        "error",
+      );
     } finally {
       setLoading(false);
     }
@@ -197,7 +228,7 @@ function AuthPage() {
       setLoading(true);
       setMessage("");
 
-      const response = await fetch(`${API_URL}/api/auth/google`, {
+      const response = await fetch(`${API_URL}/auth/google`, {
         method: "POST",
 
         headers: {
@@ -217,14 +248,12 @@ function AuthPage() {
         return;
       }
 
-      localStorage.setItem("medivault_token", data.token);
-
-      localStorage.setItem("medivault_user", JSON.stringify(data.user));
+      writeAuthSession(data.token, data.user);
 
       showMessage("Google login successful!", "success");
 
       setTimeout(() => {
-        window.location.href = "/dashboard";
+        navigate("/dashboard", { replace: true });
       }, 500);
     } catch (error) {
       console.error(error);
@@ -244,7 +273,7 @@ function AuthPage() {
   // ----------------------------
 
   const handleFacebookLogin = () => {
-    window.location.href = `${API_URL}/api/auth/facebook`;
+    window.location.href = `${API_URL}/auth/facebook`;
   };
 
   const changeMode = (loginMode) => {
