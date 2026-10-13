@@ -1,4 +1,4 @@
-// Demo data used when VITE_USE_MOCK is not "false". Lets you build the UI before the backend exists.
+// Demo data used only when VITE_USE_MOCK is "true".
 const inDays = (n) => new Date(Date.now() + n * 86400000).toISOString().slice(0, 10);
 
 export const CATEGORIES = [

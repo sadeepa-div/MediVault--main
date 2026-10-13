@@ -2,7 +2,7 @@ import { CATEGORIES, MY_PHARMACY, PHARMACIES, seedItems } from './mockData.js';
 import { demoCatalogue } from './demoCatalogue.js';
 import { readAuthToken } from './session.js';
 
-export const USE_MOCK = import.meta.env.VITE_USE_MOCK !== 'false';
+export const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 const BASE = import.meta.env.VITE_API_URL || '/api';
 
 /* ---------- Real API (Express + MySQL backend) ---------- */
