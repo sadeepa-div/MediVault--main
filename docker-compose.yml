@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  backend:
+    build:
+      context: ./Backend
+    container_name: medivault-backend
+    ports:
+      - "5001:5001"
+    env_file:
+      - ./Backend/.env
+    environment:
+      NODE_ENV: production
+      PORT: 5001
+
+  frontend:
+    build:
+      context: ./Frontend
+      args:
+        VITE_USE_MOCK: "false"
+    container_name: medivault-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
