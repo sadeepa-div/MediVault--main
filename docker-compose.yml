@@ -1,4 +1,22 @@
 services:
+  database:
+    build:
+      context: ./database
+    container_name: medivault-database
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: medivault
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in the root .env file}
+      MYSQL_USER: ${DB_USER:-medivault_app}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in the root .env file}
+    volumes:
+      - medivault-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping --host=127.0.0.1 --user=root --password=\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
   backend:
     build:
       context: ./Backend
@@ -8,13 +26,16 @@ services:
     environment:
       NODE_ENV: production
       PORT: "5001"
-      DB_HOST: "host.docker.internal"
+      DB_HOST: database
       DB_PORT: "3306"
-      DB_USER: "root"
-      DB_PASSWORD: "Bhanu@1110"
+      DB_USER: ${DB_USER:-medivault_app}
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in the root .env file}
       DB_NAME: "medivault"
-      JWT_SECRET: "change_this_secret"
-      GOOGLE_CLIENT_ID: "your_google_client_id"
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in the root .env file}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+    depends_on:
+      database:
+        condition: service_healthy
 
   frontend:
     build:
@@ -26,3 +47,6 @@ services:
       - "8080:80"
     depends_on:
       - backend
+
+volumes:
+  medivault-data:
