@@ -34,6 +34,7 @@ function AuthPage() {
     confirmPassword: "",
     birthday: "",
     phone: "",
+    role: "user",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -115,6 +116,7 @@ function AuthPage() {
         confirmPassword: "",
         birthday: "",
         phone: "",
+        role: "user",
       });
 
       setTimeout(() => {
@@ -287,6 +289,7 @@ function AuthPage() {
       confirmPassword: "",
       birthday: "",
       phone: "",
+      role: "user",
     });
   };
 
@@ -538,6 +541,16 @@ function AuthPage() {
                         onChange={handleChange}
                       />
                     </div>
+                  </div>
+                </div>
+                <div className="input-group">
+                  <label htmlFor="signup-role">Role</label>
+
+                  <div className="input-box">
+                    <FaUser />
+                    <select id="signup-role" name="role" value="user" disabled>
+                      <option value="user">User</option>
+                    </select>
                   </div>
                 </div>
               </>

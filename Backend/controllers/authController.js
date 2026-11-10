@@ -73,6 +73,7 @@ const registerUser = async (req, res) => {
               10
             );
 
+          // Public registration always creates a user, regardless of req.body.role.
           const sql = `
             INSERT INTO users
             (
@@ -80,10 +81,11 @@ const registerUser = async (req, res) => {
               email,
               password_hash,
               birthday,
-              phone
+              phone,
+              role
             )
 
-            VALUES (?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, 'user')
           `;
 
           db.query(
