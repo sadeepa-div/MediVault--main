@@ -4,11 +4,6 @@ const cors = require("cors");
 require("dotenv").config();
 
 const db = require("./config/db");
-<<<<<<< HEAD
-const authRoutes = require("./routes/authRoutes");
-const pharmacyRoutes = require("./routes/pharmacyRoutes");
-=======
->>>>>>> bedd9650e9bcdedf57dff22c30d32f9aa757d255
 
 const authRoutes = require("./routes/authRoutes");
 const medicineRoutes = require("./routes/medicineRoutes");
@@ -31,13 +26,8 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/medicines", medicineRoutes);
 app.use("/api/pharmacies", pharmacyRoutes);
-<<<<<<< HEAD
-
-// Test MySQL connection
-=======
 app.use("/api/stock", stockRoutes);
 // Start serving only after the database is reachable.
->>>>>>> bedd9650e9bcdedf57dff22c30d32f9aa757d255
 db.query("SELECT 1", (err) => {
   if (err) {
     console.error("MySQL connection failed:", err.message);

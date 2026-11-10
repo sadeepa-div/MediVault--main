@@ -101,8 +101,11 @@ function Dashboard() {
           <span>MediVault</span>
         </div>
 
-        <nav>
-          <button className="nav-active">Dashboard</button>
+        <nav className="sidebar-nav">
+          <button className="active" onClick={() => navigate("/dashboard")}>
+            <FaHospital />
+            Dashboard
+          </button>
 
           <button onClick={() => navigate("/medicine-search")}>
             <FaSearch />
