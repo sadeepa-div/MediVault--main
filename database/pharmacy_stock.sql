@@ -1,11 +1,12 @@
 USE medivault;
 
 CREATE TABLE IF NOT EXISTS pharmacy_stock (
-  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  pharmacy_id BIGINT UNSIGNED NOT NULL,
-  medicine_id BIGINT UNSIGNED NOT NULL,
-  quantity INT UNSIGNED NOT NULL DEFAULT 0,
-  price DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+  id INT NOT NULL AUTO_INCREMENT,
+  pharmacy_id INT NOT NULL,
+  medicine_id INT NOT NULL,
+  quantity INT NOT NULL DEFAULT 0,
+  price DECIMAL(10, 2) NULL,
+  updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE KEY uq_pharmacy_stock_pharmacy_medicine (pharmacy_id, medicine_id),
   KEY idx_pharmacy_stock_medicine_quantity (medicine_id, quantity),
