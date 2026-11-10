@@ -34,7 +34,7 @@ function AuthPage() {
     confirmPassword: "",
     birthday: "",
     phone: "",
-    role: "user",
+    role: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -63,6 +63,11 @@ function AuthPage() {
   // ----------------------------
 
   const handleRegister = async () => {
+    if (!formData.role) {
+      showMessage("Please select a role.", "error");
+      return;
+    }
+
     if (!formData.fullName || !formData.email || !formData.password) {
       showMessage("Please fill all required fields.", "error");
       return;
@@ -116,7 +121,7 @@ function AuthPage() {
         confirmPassword: "",
         birthday: "",
         phone: "",
-        role: "user",
+        role: "",
       });
 
       setTimeout(() => {
@@ -289,7 +294,7 @@ function AuthPage() {
       confirmPassword: "",
       birthday: "",
       phone: "",
-      role: "user",
+      role: "",
     });
   };
 
@@ -548,10 +553,24 @@ function AuthPage() {
 
                   <div className="input-box">
                     <FaUser />
-                    <select id="signup-role" name="role" value="user" disabled>
+                    <select
+                      id="signup-role"
+                      name="role"
+                      value={formData.role}
+                      onChange={handleChange}
+                      aria-describedby={formData.role === "admin" ? "signup-role-note" : undefined}
+                      required
+                    >
+                      <option value="">Select Role</option>
                       <option value="user">User</option>
+                      <option value="admin">Admin (Requires Approval)</option>
                     </select>
                   </div>
+                  {formData.role === "admin" && (
+                    <small id="signup-role-note" className="signup-role-note">
+                      Admin accounts require approval. Your account will initially be created as a User.
+                    </small>
+                  )}
                 </div>
               </>
             )}
