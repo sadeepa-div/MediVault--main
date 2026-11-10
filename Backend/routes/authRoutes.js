@@ -1,28 +1,80 @@
-const express = require("express");
+const express =
+  require("express");
 
-const router = express.Router();
+const router =
+  express.Router();
 
 const {
   registerUser,
   loginUser,
   googleLogin,
-  getCurrentUser
-} = require("../controllers/authController");
+  getCurrentUser,
+  updateProfile
+} = require(
+  "../controllers/authController"
+);
 
 const authMiddleware =
-  require("../middleware/authMiddleware");
+  require(
+    "../middleware/authMiddleware"
+  );
 
-router.post("/register", registerUser);
 
-router.post("/login", loginUser);
+// =====================================
+// REGISTER
+// POST /api/auth/register
+// =====================================
 
-router.post("/google", googleLogin);
+router.post(
+  "/register",
+  registerUser
+);
 
-// Protected route
+
+// =====================================
+// LOGIN
+// POST /api/auth/login
+// =====================================
+
+router.post(
+  "/login",
+  loginUser
+);
+
+
+// =====================================
+// GOOGLE LOGIN
+// POST /api/auth/google
+// =====================================
+
+router.post(
+  "/google",
+  googleLogin
+);
+
+
+// =====================================
+// CURRENT USER
+// GET /api/auth/me
+// =====================================
+
 router.get(
   "/me",
   authMiddleware,
   getCurrentUser
 );
+
+
+// =====================================
+// UPDATE PROFILE
+// PUT /api/auth/profile
+// =====================================
+
+router.put(
+  "/profile",
+  authMiddleware,
+  updateProfile
+);
+
 
 module.exports = router;
