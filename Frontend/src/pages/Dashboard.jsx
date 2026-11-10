@@ -9,8 +9,12 @@ import {
   FaUserCircle,
   FaSignOutAlt,
 } from "react-icons/fa";
+import MedicineManagement from "./MedicineManagement";
+import PharmacyManagement from "./PharmacyManagement";
+import ProfileManagement from "./ProfileManagement";
 
 import "./Dashboard.css";
+import "./ManagementPages.css";
 
 const API_URL = (import.meta.env.VITE_API_URL || "/api")
   .replace(/\\/g, "/")
@@ -20,6 +24,7 @@ function Dashboard() {
   const [user, setUser] = useState(null);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeView, setActiveView] = useState("dashboard");
 
   const navigate = useNavigate();
 
@@ -95,24 +100,38 @@ function Dashboard() {
         </div>
 
         <nav>
-          <button className="nav-active">Dashboard</button>
+          <button
+            className={activeView === "dashboard" ? "nav-active" : ""}
+            onClick={() => setActiveView("dashboard")}
+          >
+            Dashboard
+          </button>
 
           <button onClick={() => navigate("/medicine-search")}>
             <FaSearch />
             Medicine Search
           </button>
 
-          <button>
+          <button
+            className={activeView === "medicines" ? "nav-active" : ""}
+            onClick={() => setActiveView("medicines")}
+          >
             <FaBoxes />
             Medicine Management
           </button>
 
-          <button>
+          <button
+            className={activeView === "pharmacies" ? "nav-active" : ""}
+            onClick={() => setActiveView("pharmacies")}
+          >
             <FaHospital />
             Pharmacy Management
           </button>
 
-          <button>
+          <button
+            className={activeView === "profile" ? "nav-active" : ""}
+            onClick={() => setActiveView("profile")}
+          >
             <FaUserCircle />
             Profile
           </button>
@@ -149,91 +168,100 @@ function Dashboard() {
           </div>
         </header>
 
-        {/* STAT CARDS */}
+        {activeView === "dashboard" && (
+          <>
+            <section className="dashboard-cards">
+              <div className="dashboard-card">
+                <div className="card-icon">
+                  <FaCapsules />
+                </div>
 
-        <section className="dashboard-cards">
-          <div className="dashboard-card">
-            <div className="card-icon">
-              <FaCapsules />
-            </div>
+                <div>
+                  <p>Total Medicines</p>
+                  <h2>{stats?.totalMedicines ?? "—"}</h2>
+                  <span>Registered in MediVault</span>
+                </div>
+              </div>
 
-            <div>
-              <p>Total Medicines</p>
-              <h2>{stats?.totalMedicines ?? "—"}</h2>
-              <span>Registered in MediVault</span>
-            </div>
-          </div>
+              <div className="dashboard-card">
+                <div className="card-icon">
+                  <FaBoxes />
+                </div>
 
-          <div className="dashboard-card">
-            <div className="card-icon">
-              <FaBoxes />
-            </div>
+                <div>
+                  <p>Available Medicines</p>
+                  <h2>{stats?.availableMedicines ?? "—"}</h2>
+                  <span>With available stock</span>
+                </div>
+              </div>
 
-            <div>
-              <p>Available Medicines</p>
-              <h2>{stats?.availableMedicines ?? "—"}</h2>
-              <span>With available stock</span>
-            </div>
-          </div>
+              <div className="dashboard-card">
+                <div className="card-icon">
+                  <FaHospital />
+                </div>
 
-          <div className="dashboard-card">
-            <div className="card-icon">
-              <FaHospital />
-            </div>
+                <div>
+                  <p>Pharmacies</p>
+                  <h2>{stats?.totalPharmacies ?? "—"}</h2>
+                  <span>Registered pharmacies</span>
+                </div>
+              </div>
+            </section>
 
-            <div>
-              <p>Pharmacies</p>
-              <h2>{stats?.totalPharmacies ?? "—"}</h2>
-              <span>Registered pharmacies</span>
-            </div>
-          </div>
-        </section>
+            <section className="quick-section">
+              <h2>Quick Actions</h2>
 
-        {/* QUICK ACTION */}
+              <div className="quick-actions">
+                <button onClick={() => navigate("/medicine-search")}>
+                  <FaSearch />
+                  Search Medicine
+                </button>
 
-        <section className="quick-section">
-          <h2>Quick Actions</h2>
+                <button onClick={() => setActiveView("medicines")}>
+                  <FaCapsules />
+                  Manage Medicines
+                </button>
 
-          <div className="quick-actions">
-            <button onClick={() => navigate("/medicine-search")}>
-              <FaSearch />
-              Search Medicine
-            </button>
+                <button onClick={() => setActiveView("pharmacies")}>
+                  <FaHospital />
+                  View Pharmacies
+                </button>
 
-            <button>
-              <FaCapsules />
-              Manage Medicines
-            </button>
+                <button onClick={() => setActiveView("profile")}>
+                  <FaUserCircle />
+                  Edit Profile
+                </button>
+              </div>
+            </section>
 
-            <button>
-              <FaHospital />
-              Manage Pharmacies
-            </button>
-          </div>
-        </section>
+            <section className="account-section">
+              <h2>Your Account</h2>
 
-        {/* ACCOUNT */}
+              <div className="account-information">
+                <div>
+                  <span>Name</span>
+                  <strong>{user?.fullName}</strong>
+                </div>
 
-        <section className="account-section">
-          <h2>Your Account</h2>
+                <div>
+                  <span>Email</span>
+                  <strong>{user?.email}</strong>
+                </div>
 
-          <div className="account-information">
-            <div>
-              <span>Name</span>
-              <strong>{user?.fullName}</strong>
-            </div>
+                <div>
+                  <span>Role</span>
+                  <strong>{user?.role}</strong>
+                </div>
+              </div>
+            </section>
+          </>
+        )}
 
-            <div>
-              <span>Email</span>
-              <strong>{user?.email}</strong>
-            </div>
-
-            <div>
-              <span>Role</span>
-              <strong>{user?.role}</strong>
-            </div>
-          </div>
-        </section>
+        {activeView === "medicines" && <MedicineManagement user={user} />}
+        {activeView === "pharmacies" && <PharmacyManagement />}
+        {activeView === "profile" && (
+          <ProfileManagement user={user} onUserUpdated={setUser} />
+        )}
       </main>
     </div>
   );

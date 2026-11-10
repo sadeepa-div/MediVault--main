@@ -1,0 +1,289 @@
+.management-section {
+  margin-top: 25px;
+  padding: 25px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 7px 25px rgba(40, 75, 95, 0.06);
+}
+
+.management-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.management-heading h2 {
+  margin: 0;
+  color: #29414e;
+  font-size: 20px;
+}
+
+.management-heading p {
+  margin: 7px 0 0;
+  color: #7d8c94;
+  font-size: 13px;
+}
+
+.primary-action,
+.secondary-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 10px 15px;
+  border: 0;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.primary-action {
+  color: #fff;
+  background: #087f7c;
+}
+
+.primary-action:hover {
+  background: #066d6a;
+}
+
+.primary-action:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.secondary-action {
+  color: #385560;
+  background: #eef4f5;
+}
+
+.management-note,
+.read-only-badge {
+  color: #687c85;
+  font-size: 12px;
+}
+
+.management-note {
+  margin: 0 0 18px;
+}
+
+.read-only-badge {
+  padding: 7px 10px;
+  border-radius: 99px;
+  background: #eef4f5;
+  white-space: nowrap;
+}
+
+.medicine-form {
+  margin: 0 0 24px;
+  padding: 20px;
+  border: 1px solid #e3ecee;
+  border-radius: 12px;
+  background: #fbfdfd;
+}
+
+.medicine-form h3 {
+  margin: 0 0 16px;
+  color: #29414e;
+  font-size: 16px;
+}
+
+.management-form-grid,
+.profile-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.management-form-grid label,
+.profile-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  color: #526a74;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.management-form-grid input,
+.management-form-grid textarea,
+.profile-form input {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid #d8e4e7;
+  border-radius: 8px;
+  outline: none;
+  background: white;
+  color: #29414e;
+  font: inherit;
+  font-size: 14px;
+}
+
+.management-form-grid textarea {
+  resize: vertical;
+}
+
+.management-form-grid input:focus,
+.management-form-grid textarea:focus,
+.profile-form input:focus {
+  border-color: #087f7c;
+  box-shadow: 0 0 0 3px rgba(8, 127, 124, 0.09);
+}
+
+.management-form-grid .management-form-wide {
+  grid-column: 1 / -1;
+}
+
+.management-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.management-alert {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 9px;
+  font-size: 13px;
+}
+
+.management-error {
+  color: #9c2f35;
+  background: #fff1f1;
+}
+
+.management-success {
+  color: #176345;
+  background: #ecf8f1;
+}
+
+.management-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 460px;
+  height: 44px;
+  margin-bottom: 18px;
+  padding: 0 12px;
+  border: 1px solid #d8e4e7;
+  border-radius: 9px;
+  color: #82949b;
+}
+
+.management-search:focus-within {
+  border-color: #087f7c;
+  box-shadow: 0 0 0 3px rgba(8, 127, 124, 0.09);
+}
+
+.management-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: #29414e;
+  font: inherit;
+  font-size: 13px;
+}
+
+.management-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.management-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.management-table th,
+.management-table td {
+  padding: 13px 12px;
+  border-bottom: 1px solid #e8eff0;
+  color: #526a74;
+  font-size: 13px;
+  vertical-align: middle;
+}
+
+.management-table th {
+  color: #70838b;
+  background: #f7fafb;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.management-table td:first-child {
+  color: #29414e;
+  font-weight: 600;
+}
+
+.management-row-actions {
+  display: flex;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.management-row-actions button {
+  padding: 6px 9px;
+  border: 1px solid #dce7e9;
+  border-radius: 7px;
+  color: #087f7c;
+  background: white;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.management-row-actions .danger-action {
+  color: #a53d43;
+}
+
+.management-empty {
+  padding: 24px 12px !important;
+  color: #829198 !important;
+  text-align: center;
+}
+
+.profile-section {
+  max-width: 900px;
+}
+
+.profile-form {
+  align-items: start;
+}
+
+.profile-form input[readonly] {
+  background: #f3f7f8;
+  color: #75868d;
+}
+
+.profile-form .primary-action {
+  justify-self: start;
+  align-self: end;
+}
+
+@media (max-width: 700px) {
+  .management-section {
+    padding: 18px;
+  }
+
+  .management-heading {
+    flex-direction: column;
+  }
+
+  .management-form-grid,
+  .profile-form {
+    grid-template-columns: 1fr;
+  }
+
+  .management-form-grid .management-form-wide {
+    grid-column: auto;
+  }
+}

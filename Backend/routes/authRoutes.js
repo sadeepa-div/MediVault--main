@@ -6,7 +6,8 @@ const {
   registerUser,
   loginUser,
   googleLogin,
-  getCurrentUser
+  getCurrentUser,
+  updateCurrentUser
 } = require("../controllers/authController");
 
 const authMiddleware =
@@ -23,6 +24,12 @@ router.get(
   "/me",
   authMiddleware,
   getCurrentUser
+);
+
+router.put(
+  "/me",
+  authMiddleware,
+  updateCurrentUser
 );
 
 module.exports = router;
