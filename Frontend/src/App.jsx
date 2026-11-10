@@ -1,21 +1,24 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import AuthPage from "./pages/AuthPage";
 import Dashboard from "./pages/Dashboard";
 import MedicineSearch from "./pages/MedicineSearch";
+import MedicineManagement from "./pages/MedicineManagement";
+import PharmacyManagement from "./pages/PharmacyManagement";
+import StockManagement from "./pages/StockManagement";
+import Profile from "./pages/Profile";
 
 import ProtectedRoute from "./components/ProtectedRoute";
-import MedicineManagement from "./pages/MedicineManagement";
-
 import AdminRoute from "./components/AdminRoute";
-import PharmacyManagement from "./pages/PharmacyManagement";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* LOGIN / SIGNUP */}
         <Route path="/" element={<AuthPage />} />
 
+        {/* DASHBOARD */}
         <Route
           path="/dashboard"
           element={
@@ -25,6 +28,7 @@ function App() {
           }
         />
 
+        {/* MEDICINE SEARCH */}
         <Route
           path="/medicine-search"
           element={
@@ -34,6 +38,7 @@ function App() {
           }
         />
 
+        {/* MEDICINE MANAGEMENT - ADMIN ONLY */}
         <Route
           path="/medicine-management"
           element={
@@ -45,6 +50,7 @@ function App() {
           }
         />
 
+        {/* PHARMACY MANAGEMENT - ADMIN ONLY */}
         <Route
           path="/pharmacy-management"
           element={
@@ -55,6 +61,31 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* STOCK MANAGEMENT - ADMIN ONLY */}
+        <Route
+          path="/stock-management"
+          element={
+            <ProtectedRoute>
+              <AdminRoute>
+                <StockManagement />
+              </AdminRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* PROFILE */}
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* UNKNOWN URL */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

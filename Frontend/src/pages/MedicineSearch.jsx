@@ -14,8 +14,9 @@ import {
 import "./MedicineSearch.css";
 
 const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "/api";
+  (import.meta.env.VITE_API_URL || "/api")
+    .replace(/\\/g, "/")
+    .replace(/\/$/, "");
 
 function MedicineSearch() {
   const navigate = useNavigate();

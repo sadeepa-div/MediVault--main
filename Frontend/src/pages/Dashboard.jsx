@@ -13,7 +13,9 @@ import {
 
 import "./Dashboard.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "/api";
+const API_URL = (import.meta.env.VITE_API_URL || "/api")
+  .replace(/\\/g, "/")
+  .replace(/\/$/, "");
 
 function Dashboard() {
   const [user, setUser] = useState(null);
@@ -109,7 +111,7 @@ function Dashboard() {
 
           {user?.role === "admin" && (
             <button onClick={() => navigate("/medicine-management")}>
-              <FaBoxes />
+              <FaCapsules />
               Medicine Management
             </button>
           )}
@@ -121,10 +123,18 @@ function Dashboard() {
             </button>
           )}
 
-          <button>
+          {user?.role === "admin" && (
+            <button onClick={() => navigate("/stock-management")}>
+              <FaBoxes />
+              Stock Management
+            </button>
+          )}
+
+          <button onClick={() => navigate("/profile")}>
             <FaUserCircle />
             Profile
           </button>
+
         </nav>
 
         <button className="logout-button" onClick={handleLogout}>
@@ -225,6 +235,13 @@ function Dashboard() {
               <button onClick={() => navigate("/pharmacy-management")}>
                 <FaHospital />
                 Manage Pharmacies
+              </button>
+            )}
+
+            {user?.role === "admin" && (
+              <button onClick={() => navigate("/stock-management")}>
+                <FaBoxes />
+                Stock Management
               </button>
             )}
           </div>
