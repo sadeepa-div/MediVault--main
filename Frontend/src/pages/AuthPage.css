@@ -361,14 +361,6 @@ input {
   color: #e14e4e;
 }
 
-.auth-page .signup-role-note {
-  display: block;
-  margin-top: 7px;
-  color: #697982;
-  font-size: 12px;
-  line-height: 1.5;
-}
-
 .input-box {
   height: 45px;
 

@@ -99,6 +99,7 @@ function AuthPage() {
           password: formData.password,
           birthday: formData.birthday,
           phone: formData.phone,
+          role: formData.role,
         }),
       });
 
@@ -558,19 +559,13 @@ function AuthPage() {
                       name="role"
                       value={formData.role}
                       onChange={handleChange}
-                      aria-describedby={formData.role === "admin" ? "signup-role-note" : undefined}
                       required
                     >
                       <option value="">Select Role</option>
                       <option value="user">User</option>
-                      <option value="admin">Admin (Requires Approval)</option>
+                      <option value="admin">Admin</option>
                     </select>
                   </div>
-                  {formData.role === "admin" && (
-                    <small id="signup-role-note" className="signup-role-note">
-                      Admin accounts require approval. Your account will initially be created as a User.
-                    </small>
-                  )}
                 </div>
               </>
             )}
