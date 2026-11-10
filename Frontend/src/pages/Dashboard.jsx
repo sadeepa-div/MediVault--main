@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { clearAuthSession, readAuthToken } from "../session";
 
 import {
   FaCapsules,
@@ -18,14 +19,15 @@ const API_URL = (import.meta.env.VITE_API_URL || "/api")
 
 function Dashboard() {
   const [user, setUser] = useState(null);
-  const [stats, setStats] = useState(null);
+  const [summary, setSummary] = useState(null);
+  const [summaryError, setSummaryError] = useState("");
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const loadUser = async () => {
-      const token = localStorage.getItem("medivault_token");
+      const token = readAuthToken();
 
       if (!token) {
         navigate("/");
@@ -42,10 +44,7 @@ function Dashboard() {
         const data = await response.json();
 
         if (!response.ok) {
-          localStorage.removeItem("medivault_token");
-
-          localStorage.removeItem("medivault_user");
-
+          clearAuthSession();
           navigate("/");
 
           return;
@@ -53,14 +52,25 @@ function Dashboard() {
 
         setUser(data.user);
 
-        const statsResponse = await fetch(`${API_URL}/medicines/stats`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        try {
+          const summaryResponse = await fetch(`${API_URL}/medicines/summary`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          const summaryData = await summaryResponse.json();
 
-        if (statsResponse.ok) {
-          setStats(await statsResponse.json());
+          if (!summaryResponse.ok) {
+            setSummaryError(
+              summaryData.message || "Could not load dashboard summary.",
+            );
+            return;
+          }
+
+          setSummary(summaryData);
+        } catch (error) {
+          console.error("Could not load dashboard summary:", error);
+          setSummaryError("Could not load dashboard summary.");
         }
       } catch (error) {
         console.error(error);
@@ -73,10 +83,7 @@ function Dashboard() {
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem("medivault_token");
-
-    localStorage.removeItem("medivault_user");
-
+    clearAuthSession();
     navigate("/");
   };
 
@@ -102,20 +109,32 @@ function Dashboard() {
             Medicine Search
           </button>
 
-          <button>
-            <FaBoxes />
-            Medicine Management
-          </button>
+          {user?.role === "admin" && (
+            <button onClick={() => navigate("/medicine-management")}>
+              <FaCapsules />
+              Medicine Management
+            </button>
+          )}
 
-          <button>
-            <FaHospital />
-            Pharmacy Management
-          </button>
+          {user?.role === "admin" && (
+            <button onClick={() => navigate("/pharmacy-management")}>
+              <FaHospital />
+              Pharmacy Management
+            </button>
+          )}
 
-          <button>
+          {user?.role === "admin" && (
+            <button onClick={() => navigate("/stock-management")}>
+              <FaBoxes />
+              Stock Management
+            </button>
+          )}
+
+          <button onClick={() => navigate("/profile")}>
             <FaUserCircle />
             Profile
           </button>
+
         </nav>
 
         <button className="logout-button" onClick={handleLogout}>
@@ -159,8 +178,8 @@ function Dashboard() {
 
             <div>
               <p>Total Medicines</p>
-              <h2>{stats?.totalMedicines ?? "—"}</h2>
-              <span>Registered in MediVault</span>
+              <h2>{summary?.totalMedicines ?? "—"}</h2>
+              <span>Medicines in the catalogue</span>
             </div>
           </div>
 
@@ -171,8 +190,8 @@ function Dashboard() {
 
             <div>
               <p>Available Medicines</p>
-              <h2>{stats?.availableMedicines ?? "—"}</h2>
-              <span>With available stock</span>
+              <h2>{summary?.availableMedicines ?? "—"}</h2>
+              <span>Currently in stock at pharmacies</span>
             </div>
           </div>
 
@@ -183,11 +202,16 @@ function Dashboard() {
 
             <div>
               <p>Pharmacies</p>
-              <h2>{stats?.totalPharmacies ?? "—"}</h2>
+              <h2>{summary?.pharmacies ?? "—"}</h2>
               <span>Registered pharmacies</span>
             </div>
           </div>
         </section>
+        {summaryError && (
+          <p className="dashboard-summary-error" role="alert">
+            {summaryError}
+          </p>
+        )}
 
         {/* QUICK ACTION */}
 
@@ -200,15 +224,26 @@ function Dashboard() {
               Search Medicine
             </button>
 
-            <button>
-              <FaCapsules />
-              Manage Medicines
-            </button>
+            {user?.role === "admin" && (
+              <button onClick={() => navigate("/medicine-management")}>
+                <FaCapsules />
+                Manage Medicines
+              </button>
+            )}
 
-            <button>
-              <FaHospital />
-              Manage Pharmacies
-            </button>
+            {user?.role === "admin" && (
+              <button onClick={() => navigate("/pharmacy-management")}>
+                <FaHospital />
+                Manage Pharmacies
+              </button>
+            )}
+
+            {user?.role === "admin" && (
+              <button onClick={() => navigate("/stock-management")}>
+                <FaBoxes />
+                Stock Management
+              </button>
+            )}
           </div>
         </section>
 

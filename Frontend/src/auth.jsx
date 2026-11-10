@@ -1,28 +1,21 @@
 import { createContext, useContext, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { api } from './api.js';
+import { clearAuthSession, readAuthUser, writeAuthSession } from './session.js';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('mv_user'));
-    } catch {
-      return null;
-    }
-  });
+  const [user, setUser] = useState(() => readAuthUser());
 
   async function login(email, password) {
     const { token, user: u } = await api.login(email, password);
-    localStorage.setItem('mv_token', token);
-    localStorage.setItem('mv_user', JSON.stringify(u));
+    writeAuthSession(token, u);
     setUser(u);
   }
 
   function logout() {
-    localStorage.removeItem('mv_token');
-    localStorage.removeItem('mv_user');
+    clearAuthSession();
     setUser(null);
   }
 
