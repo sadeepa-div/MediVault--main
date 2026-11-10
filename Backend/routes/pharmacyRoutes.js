@@ -1,13 +1,4 @@
 const express = require("express");
-<<<<<<< HEAD
-const authMiddleware = require("../middleware/authMiddleware");
-const { getAllPharmacies } = require("../controllers/pharmacyController");
-
-const router = express.Router();
-
-router.get("/", authMiddleware, getAllPharmacies);
-
-=======
 
 const router = express.Router();
 
@@ -32,5 +23,4 @@ router.put("/:id", authMiddleware, adminMiddleware, updatePharmacy);
 
 router.delete("/:id", authMiddleware, adminMiddleware, deletePharmacy);
 
->>>>>>> bedd9650e9bcdedf57dff22c30d32f9aa757d255
 module.exports = router;

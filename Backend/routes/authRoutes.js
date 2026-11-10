@@ -1,94 +1,16 @@
-const express =
-  require("express");
-
-const router =
-  express.Router();
-
+const express = require("express");
+const router = express.Router();
 const {
-  registerUser,
-  loginUser,
-  googleLogin,
-  getCurrentUser,
-<<<<<<< HEAD
-  updateCurrentUser
+  registerUser, loginUser, googleLogin, getCurrentUser, updateProfile,
 } = require("../controllers/authController");
-=======
-  updateProfile
-} = require(
-  "../controllers/authController"
-);
->>>>>>> bedd9650e9bcdedf57dff22c30d32f9aa757d255
+const authMiddleware = require("../middleware/authMiddleware");
 
-const authMiddleware =
-  require(
-    "../middleware/authMiddleware"
-  );
+router.post("/register", registerUser);
+router.post("/login", loginUser);
+router.post("/google", googleLogin);
+router.get("/me", authMiddleware, getCurrentUser);
+router.put("/profile", authMiddleware, updateProfile);
+// Keep the existing profile-management client compatible.
+router.put("/me", authMiddleware, updateProfile);
 
-
-// =====================================
-// REGISTER
-// POST /api/auth/register
-// =====================================
-
-router.post(
-  "/register",
-  registerUser
-);
-
-
-// =====================================
-// LOGIN
-// POST /api/auth/login
-// =====================================
-
-router.post(
-  "/login",
-  loginUser
-);
-
-
-// =====================================
-// GOOGLE LOGIN
-// POST /api/auth/google
-// =====================================
-
-router.post(
-  "/google",
-  googleLogin
-);
-
-
-// =====================================
-// CURRENT USER
-// GET /api/auth/me
-// =====================================
-
-router.get(
-  "/me",
-  authMiddleware,
-  getCurrentUser
-);
-
-<<<<<<< HEAD
-router.put(
-  "/me",
-  authMiddleware,
-  updateCurrentUser
-);
-
-=======
-
-// =====================================
-// UPDATE PROFILE
-// PUT /api/auth/profile
-// =====================================
-
-router.put(
-  "/profile",
-  authMiddleware,
-  updateProfile
-);
-
-
->>>>>>> bedd9650e9bcdedf57dff22c30d32f9aa757d255
 module.exports = router;

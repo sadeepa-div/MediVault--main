@@ -1,10 +1,5 @@
 const db = require("../config/db");
 
-<<<<<<< HEAD
-const getAllPharmacies = (_req, res) => {
-  const sql = `
-    SELECT id, name, address, city, phone, email
-=======
 // ==========================================
 // GET ALL PHARMACIES
 // ==========================================
@@ -20,7 +15,6 @@ const getAllPharmacies = (req, res) => {
       email,
       created_at,
       updated_at
->>>>>>> bedd9650e9bcdedf57dff22c30d32f9aa757d255
     FROM pharmacies
     ORDER BY name
   `;
@@ -38,10 +32,6 @@ const getAllPharmacies = (req, res) => {
   });
 };
 
-<<<<<<< HEAD
-module.exports = {
-  getAllPharmacies,
-=======
 // ==========================================
 // ADD PHARMACY
 // ==========================================
@@ -191,5 +181,4 @@ module.exports = {
   addPharmacy,
   updatePharmacy,
   deletePharmacy,
->>>>>>> bedd9650e9bcdedf57dff22c30d32f9aa757d255
 };
