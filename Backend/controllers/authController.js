@@ -7,225 +7,368 @@ const googleClient = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID
 );
 
+
+// =====================================================
+// REGISTER USER
+// =====================================================
+
 const registerUser = async (req, res) => {
   try {
-    const { fullName, email, password, birthday, phone } = req.body;
+    const {
+      fullName,
+      email,
+      password,
+      birthday,
+      phone
+    } = req.body;
 
     // Required fields
     if (!fullName || !email || !password) {
       return res.status(400).json({
-        message: "Full name, email and password are required",
+        message:
+          "Full name, email and password are required"
       });
     }
 
     // Password validation
     if (password.length < 8) {
       return res.status(400).json({
-        message: "Password must be at least 8 characters",
+        message:
+          "Password must be at least 8 characters"
       });
     }
 
-    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedEmail =
+      email.trim().toLowerCase();
 
-    // Check if email already exists
+    // Check whether email already exists
     db.query(
       "SELECT id FROM users WHERE email = ?",
       [normalizedEmail],
+
       async (err, results) => {
         if (err) {
-          console.error(err);
-
-          return res.status(500).json({
-            message: "Database error",
-          });
-        }
-
-        if (results.length > 0) {
-          return res.status(409).json({
-            message: "Email is already registered",
-          });
-        }
-
-        // Hash password
-        const passwordHash = await bcrypt.hash(password, 10);
-
-        const sql = `
-          INSERT INTO users
-          (full_name, email, password_hash, birthday, phone)
-          VALUES (?, ?, ?, ?, ?)
-        `;
-
-        db.query(
-          sql,
-          [
-            fullName,
-            normalizedEmail,
-            passwordHash,
-            birthday || null,
-            phone || null,
-          ],
-          (insertErr, result) => {
-            if (insertErr) {
-              console.error(insertErr);
-
-              return res.status(500).json({
-                message: "Could not create account",
-              });
-            }
-
-            return res.status(201).json({
-              message: "Account created successfully",
-              user: {
-                id: result.insertId,
-                fullName: fullName,
-                email: normalizedEmail,
-              },
-            });
-          },
-        );
-      },
-    );
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      message: "Server error",
-    });
-  }
-};
-
-const loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    // Check required fields
-    if (!email || !password) {
-      return res.status(400).json({
-        message: "Email and password are required"
-      });
-    }
-
-    const normalizedEmail = email.trim().toLowerCase();
-
-    // Find user
-    db.query(
-      "SELECT * FROM users WHERE email = ?",
-      [normalizedEmail],
-      async (err, results) => {
-
-        if (err) {
-          console.error(err);
+          console.error(
+            "Registration database error:",
+            err
+          );
 
           return res.status(500).json({
             message: "Database error"
           });
         }
 
-        // User not found
-        if (results.length === 0) {
-          return res.status(401).json({
-            message: "Invalid email or password"
+        if (results.length > 0) {
+          return res.status(409).json({
+            message:
+              "Email is already registered"
           });
         }
 
-        const user = results[0];
+        try {
+          // Hash password
+          const passwordHash =
+            await bcrypt.hash(
+              password,
+              10
+            );
 
-        // Account may later be Google/Facebook only
-        if (!user.password_hash) {
-          return res.status(401).json({
-            message: "Please login using Google or Facebook"
-          });
+          const sql = `
+            INSERT INTO users
+            (
+              full_name,
+              email,
+              password_hash,
+              birthday,
+              phone
+            )
+
+            VALUES (?, ?, ?, ?, ?)
+          `;
+
+          db.query(
+            sql,
+            [
+              fullName.trim(),
+              normalizedEmail,
+              passwordHash,
+              birthday || null,
+              phone?.trim() || null
+            ],
+
+            (insertErr, result) => {
+              if (insertErr) {
+                console.error(
+                  "Registration insert error:",
+                  insertErr
+                );
+
+                return res
+                  .status(500)
+                  .json({
+                    message:
+                      "Could not create account"
+                  });
+              }
+
+              return res
+                .status(201)
+                .json({
+                  message:
+                    "Account created successfully",
+
+                  user: {
+                    id:
+                      result.insertId,
+
+                    fullName:
+                      fullName.trim(),
+
+                    email:
+                      normalizedEmail,
+
+                    role: "user"
+                  }
+                });
+            }
+          );
+
+        } catch (hashError) {
+          console.error(
+            "Password hashing error:",
+            hashError
+          );
+
+          return res
+            .status(500)
+            .json({
+              message:
+                "Could not create account"
+            });
         }
-
-        // Compare entered password with hashed password
-        const passwordMatches = await bcrypt.compare(
-          password,
-          user.password_hash
-        );
-
-        if (!passwordMatches) {
-          return res.status(401).json({
-            message: "Invalid email or password"
-          });
-        }
-
-        // Create JWT
-        const token = jwt.sign(
-          {
-            id: user.id,
-            email: user.email,
-            role: user.role
-          },
-          process.env.JWT_SECRET,
-          {
-            expiresIn: "2h"
-          }
-        );
-
-        return res.status(200).json({
-          message: "Login successful",
-
-          token,
-
-          user: {
-            id: user.id,
-            fullName: user.full_name,
-            email: user.email,
-            role: user.role
-          }
-        });
       }
     );
 
   } catch (error) {
-    console.error(error);
+    console.error(
+      "Register error:",
+      error
+    );
 
-    return res.status(500).json({
-      message: "Server error"
-    });
+    return res
+      .status(500)
+      .json({
+        message: "Server error"
+      });
   }
 };
 
+
+// =====================================================
+// LOGIN USER
+// =====================================================
+
+const loginUser = async (req, res) => {
+  try {
+    const {
+      email,
+      password
+    } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        message:
+          "Email and password are required"
+      });
+    }
+
+    const normalizedEmail =
+      email.trim().toLowerCase();
+
+    db.query(
+      "SELECT * FROM users WHERE email = ?",
+      [normalizedEmail],
+
+      async (err, results) => {
+        if (err) {
+          console.error(
+            "Login database error:",
+            err
+          );
+
+          return res.status(500).json({
+            message: "Database error"
+          });
+        }
+
+        if (results.length === 0) {
+          return res.status(401).json({
+            message:
+              "Invalid email or password"
+          });
+        }
+
+        const user =
+          results[0];
+
+        // Google-only account
+        if (!user.password_hash) {
+          return res.status(401).json({
+            message:
+              "Please login using Google"
+          });
+        }
+
+        try {
+          const passwordMatches =
+            await bcrypt.compare(
+              password,
+              user.password_hash
+            );
+
+          if (!passwordMatches) {
+            return res.status(401).json({
+              message:
+                "Invalid email or password"
+            });
+          }
+
+          const token =
+            jwt.sign(
+              {
+                id: user.id,
+                email: user.email,
+                role: user.role
+              },
+
+              process.env.JWT_SECRET,
+
+              {
+                expiresIn: "2h"
+              }
+            );
+
+          return res
+            .status(200)
+            .json({
+              message:
+                "Login successful",
+
+              token,
+
+              user: {
+                id: user.id,
+
+                fullName:
+                  user.full_name,
+
+                email:
+                  user.email,
+
+                role:
+                  user.role
+              }
+            });
+
+        } catch (compareError) {
+          console.error(
+            "Password comparison error:",
+            compareError
+          );
+
+          return res
+            .status(500)
+            .json({
+              message: "Server error"
+            });
+        }
+      }
+    );
+
+  } catch (error) {
+    console.error(
+      "Login error:",
+      error
+    );
+
+    return res
+      .status(500)
+      .json({
+        message: "Server error"
+      });
+  }
+};
+
+
+// =====================================================
+// GOOGLE LOGIN
+// =====================================================
+
 const googleLogin = async (req, res) => {
   try {
-    const { credential } = req.body;
+    const {
+      credential
+    } = req.body;
 
     if (!credential) {
       return res.status(400).json({
-        message: "Google credential is required"
+        message:
+          "Google credential is required"
       });
     }
 
-    const ticket = await googleClient.verifyIdToken({
-      idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID
-    });
+    const ticket =
+      await googleClient.verifyIdToken({
+        idToken: credential,
 
-    const payload = ticket.getPayload();
+        audience:
+          process.env.GOOGLE_CLIENT_ID
+      });
+
+    const payload =
+      ticket.getPayload();
 
     if (!payload) {
       return res.status(401).json({
-        message: "Invalid Google account"
+        message:
+          "Invalid Google account"
       });
     }
 
-    const googleId = payload.sub;
-    const email = payload.email?.toLowerCase();
-    const fullName = payload.name || "Google User";
+    const googleId =
+      payload.sub;
 
-    if (!email || !payload.email_verified) {
+    const email =
+      payload.email
+        ?.trim()
+        .toLowerCase();
+
+    const fullName =
+      payload.name ||
+      "Google User";
+
+    if (
+      !email ||
+      !payload.email_verified
+    ) {
       return res.status(401).json({
-        message: "Google email could not be verified"
+        message:
+          "Google email could not be verified"
       });
     }
 
-    // First check Google ID
+
+    // First check google_id
     db.query(
       "SELECT * FROM users WHERE google_id = ?",
       [googleId],
+
       (googleErr, googleResults) => {
         if (googleErr) {
-          console.error(googleErr);
+          console.error(
+            "Google ID database error:",
+            googleErr
+          );
 
           return res.status(500).json({
             message: "Database error"
@@ -233,43 +376,74 @@ const googleLogin = async (req, res) => {
         }
 
         // Existing Google user
-        if (googleResults.length > 0) {
+        if (
+          googleResults.length > 0
+        ) {
           return sendGoogleLoginResponse(
             googleResults[0],
             res
           );
         }
 
-        // Check whether same email already exists
+
+        // Check if email already exists
         db.query(
           "SELECT * FROM users WHERE email = ?",
           [email],
+
           (emailErr, emailResults) => {
             if (emailErr) {
-              console.error(emailErr);
+              console.error(
+                "Google email lookup error:",
+                emailErr
+              );
 
-              return res.status(500).json({
-                message: "Database error"
-              });
+              return res
+                .status(500)
+                .json({
+                  message:
+                    "Database error"
+                });
             }
 
-            // Existing manual account:
-            // connect Google to same account
-            if (emailResults.length > 0) {
-              const existingUser = emailResults[0];
+
+            // Existing manual account
+            // Link Google with same account
+            if (
+              emailResults.length > 0
+            ) {
+              const existingUser =
+                emailResults[0];
 
               db.query(
-                "UPDATE users SET google_id = ? WHERE id = ?",
-                [googleId, existingUser.id],
+                `
+                UPDATE users
+                SET google_id = ?
+                WHERE id = ?
+                `,
+
+                [
+                  googleId,
+                  existingUser.id
+                ],
+
                 (updateErr) => {
                   if (updateErr) {
-                    console.error(updateErr);
+                    console.error(
+                      "Google link error:",
+                      updateErr
+                    );
 
-                    return res.status(500).json({
-                      message:
-                        "Could not connect Google account"
-                    });
+                    return res
+                      .status(500)
+                      .json({
+                        message:
+                          "Could not connect Google account"
+                      });
                   }
+
+                  existingUser.google_id =
+                    googleId;
 
                   return sendGoogleLoginResponse(
                     existingUser,
@@ -281,29 +455,56 @@ const googleLogin = async (req, res) => {
               return;
             }
 
+
             // Completely new Google user
             db.query(
               `
               INSERT INTO users
-              (full_name, email, google_id, role)
+              (
+                full_name,
+                email,
+                google_id,
+                role
+              )
+
               VALUES (?, ?, ?, 'user')
               `,
-              [fullName, email, googleId],
+
+              [
+                fullName,
+                email,
+                googleId
+              ],
+
               (insertErr, result) => {
                 if (insertErr) {
-                  console.error(insertErr);
+                  console.error(
+                    "Google user insert error:",
+                    insertErr
+                  );
 
-                  return res.status(500).json({
-                    message:
-                      "Could not create Google account"
-                  });
+                  return res
+                    .status(500)
+                    .json({
+                      message:
+                        "Could not create Google account"
+                    });
                 }
 
                 const newUser = {
-                  id: result.insertId,
-                  full_name: fullName,
+                  id:
+                    result.insertId,
+
+                  full_name:
+                    fullName,
+
                   email,
-                  role: "user"
+
+                  role:
+                    "user",
+
+                  google_id:
+                    googleId
                 };
 
                 return sendGoogleLoginResponse(
@@ -323,42 +524,74 @@ const googleLogin = async (req, res) => {
       error
     );
 
-    return res.status(401).json({
-      message: "Google authentication failed"
-    });
+    return res
+      .status(401)
+      .json({
+        message:
+          "Google authentication failed"
+      });
   }
 };
 
-const sendGoogleLoginResponse = (user, res) => {
-  const token = jwt.sign(
-    {
-      id: user.id,
-      email: user.email,
-      role: user.role
-    },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "2h"
-    }
-  );
 
-  return res.status(200).json({
-    message: "Google login successful",
+// =====================================================
+// GOOGLE LOGIN RESPONSE
+// =====================================================
 
-    token,
+const sendGoogleLoginResponse = (
+  user,
+  res
+) => {
+  const token =
+    jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+        role: user.role
+      },
 
-    user: {
-      id: user.id,
-      fullName: user.full_name,
-      email: user.email,
-      role: user.role
-    }
-  });
+      process.env.JWT_SECRET,
+
+      {
+        expiresIn: "2h"
+      }
+    );
+
+  return res
+    .status(200)
+    .json({
+      message:
+        "Google login successful",
+
+      token,
+
+      user: {
+        id:
+          user.id,
+
+        fullName:
+          user.full_name,
+
+        email:
+          user.email,
+
+        role:
+          user.role
+      }
+    });
 };
 
-const getCurrentUser = (req, res) => {
 
-  const userId = req.user.id;
+// =====================================================
+// GET CURRENT USER
+// =====================================================
+
+const getCurrentUser = (
+  req,
+  res
+) => {
+  const userId =
+    req.user.id;
 
   const sql = `
     SELECT
@@ -369,46 +602,76 @@ const getCurrentUser = (req, res) => {
       phone,
       role,
       created_at
+
     FROM users
+
     WHERE id = ?
   `;
 
   db.query(
     sql,
     [userId],
+
     (err, results) => {
-
       if (err) {
-        console.error(err);
+        console.error(
+          "Get current user error:",
+          err
+        );
 
-        return res.status(500).json({
-          message: "Database error"
-        });
+        return res
+          .status(500)
+          .json({
+            message:
+              "Database error"
+          });
       }
 
-      if (results.length === 0) {
-        return res.status(404).json({
-          message: "User not found"
-        });
+      if (
+        results.length === 0
+      ) {
+        return res
+          .status(404)
+          .json({
+            message:
+              "User not found"
+          });
       }
 
-      const user = results[0];
+      const user =
+        results[0];
 
-      res.status(200).json({
-        user: {
-          id: user.id,
-          fullName: user.full_name,
-          email: user.email,
-          birthday: user.birthday,
-          phone: user.phone,
-          role: user.role,
-          createdAt: user.created_at
-        }
-      });
+      return res
+        .status(200)
+        .json({
+          user: {
+            id:
+              user.id,
+
+            fullName:
+              user.full_name,
+
+            email:
+              user.email,
+
+            birthday:
+              user.birthday,
+
+            phone:
+              user.phone,
+
+            role:
+              user.role,
+
+            createdAt:
+              user.created_at
+          }
+        });
     }
   );
 };
 
+<<<<<<< HEAD
 const updateCurrentUser = (req, res) => {
   const fullName = typeof req.body?.fullName === "string"
     ? req.body.fullName.trim()
@@ -504,10 +767,184 @@ const updateCurrentUser = (req, res) => {
   );
 };
 
+=======
+
+// =====================================================
+// UPDATE PROFILE
+// =====================================================
+
+const updateProfile = (
+  req,
+  res
+) => {
+  const userId =
+    req.user.id;
+
+  const {
+    fullName,
+    birthday,
+    phone
+  } = req.body;
+
+  if (
+    !fullName ||
+    !fullName.trim()
+  ) {
+    return res
+      .status(400)
+      .json({
+        message:
+          "Full name is required"
+      });
+  }
+
+  const sql = `
+    UPDATE users
+
+    SET
+      full_name = ?,
+      birthday = ?,
+      phone = ?
+
+    WHERE id = ?
+  `;
+
+  db.query(
+    sql,
+
+    [
+      fullName.trim(),
+      birthday || null,
+      phone?.trim() || null,
+      userId
+    ],
+
+    (err, result) => {
+      if (err) {
+        console.error(
+          "Update profile error:",
+          err
+        );
+
+        return res
+          .status(500)
+          .json({
+            message:
+              "Could not update profile"
+          });
+      }
+
+      if (
+        result.affectedRows === 0
+      ) {
+        return res
+          .status(404)
+          .json({
+            message:
+              "User not found"
+          });
+      }
+
+      // Reload updated user
+      db.query(
+        `
+        SELECT
+          id,
+          full_name,
+          email,
+          birthday,
+          phone,
+          role,
+          created_at
+
+        FROM users
+
+        WHERE id = ?
+        `,
+
+        [userId],
+
+        (
+          selectErr,
+          results
+        ) => {
+          if (selectErr) {
+            console.error(
+              "Reload profile error:",
+              selectErr
+            );
+
+            return res
+              .status(500)
+              .json({
+                message:
+                  "Could not reload profile"
+              });
+          }
+
+          if (
+            results.length === 0
+          ) {
+            return res
+              .status(404)
+              .json({
+                message:
+                  "User not found"
+              });
+          }
+
+          const user =
+            results[0];
+
+          return res
+            .status(200)
+            .json({
+              message:
+                "Profile updated successfully",
+
+              user: {
+                id:
+                  user.id,
+
+                fullName:
+                  user.full_name,
+
+                email:
+                  user.email,
+
+                birthday:
+                  user.birthday,
+
+                phone:
+                  user.phone,
+
+                role:
+                  user.role,
+
+                createdAt:
+                  user.created_at
+              }
+            });
+        }
+      );
+    }
+  );
+};
+
+
+// =====================================================
+// EXPORTS
+// =====================================================
+
+>>>>>>> bedd9650e9bcdedf57dff22c30d32f9aa757d255
 module.exports = {
   registerUser,
   loginUser,
   googleLogin,
   getCurrentUser,
+<<<<<<< HEAD
   updateCurrentUser,
+=======
+  updateProfile
+>>>>>>> bedd9650e9bcdedf57dff22c30d32f9aa757d255
 };

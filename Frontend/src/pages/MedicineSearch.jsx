@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { clearAuthSession, readAuthToken } from "../session";
 import {
   FaSearch,
   FaArrowLeft,
@@ -34,8 +35,7 @@ function MedicineSearch() {
       return;
     }
 
-    const token =
-      localStorage.getItem("medivault_token");
+    const token = readAuthToken();
 
     if (!token) {
       navigate("/");
@@ -61,14 +61,7 @@ function MedicineSearch() {
 
       if (!response.ok) {
         if (response.status === 401) {
-          localStorage.removeItem(
-            "medivault_token"
-          );
-
-          localStorage.removeItem(
-            "medivault_user"
-          );
-
+          clearAuthSession();
           navigate("/");
           return;
         }
