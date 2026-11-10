@@ -110,6 +110,35 @@ const searchMedicines = (req, res) => {
   );
 };
 
+const getDashboardStats = (_req, res) => {
+  const sql = `
+    SELECT
+      (SELECT COUNT(*) FROM medicines) AS totalMedicines,
+      (SELECT COUNT(DISTINCT medicine_id)
+       FROM pharmacy_stock
+       WHERE quantity > 0) AS availableMedicines,
+      (SELECT COUNT(*) FROM pharmacies) AS totalPharmacies
+  `;
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error(err);
+
+      return res.status(500).json({
+        message: "Database error",
+      });
+    }
+
+    const stats = results[0];
+
+    res.status(200).json({
+      totalMedicines: Number(stats.totalMedicines),
+      availableMedicines: Number(stats.availableMedicines),
+      totalPharmacies: Number(stats.totalPharmacies),
+    });
+  });
+};
+
 const addMedicine = (req, res) => {
   const { name, genericName, category, manufacturer, description } = req.body;
 
@@ -252,6 +281,7 @@ module.exports = {
   getMedicineSummary,
   getAllMedicines,
   searchMedicines,
+  getDashboardStats,
   addMedicine,
   updateMedicine,
   deleteMedicine,
