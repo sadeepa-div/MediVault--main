@@ -1,0 +1,270 @@
+.stock-management-page {
+  min-height: 100vh;
+  background: linear-gradient(
+    135deg,
+    #f3faf9,
+    #f4f8fc
+  );
+  padding: 30px;
+}
+
+.stock-header {
+  max-width: 1200px;
+  margin: 0 auto 25px;
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.stock-back-button {
+  border: none;
+  background: white;
+  color: #087f7c;
+  padding: 11px 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stock-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.stock-title-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  background: #e7f5f3;
+  color: #087f7c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.stock-title h1 {
+  margin: 0;
+  color: #29414e;
+  font-size: 28px;
+}
+
+.stock-title p {
+  margin: 4px 0 0;
+  color: #809098;
+  font-size: 13px;
+}
+
+.stock-container {
+  max-width: 1200px;
+  margin: auto;
+  display: grid;
+  gap: 25px;
+}
+
+.stock-form-card,
+.stock-list-card {
+  background: white;
+  border-radius: 18px;
+  padding: 26px;
+  box-shadow:
+    0 8px 25px
+    rgba(40, 70, 90, 0.07);
+}
+
+.stock-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.stock-section-heading h2 {
+  margin: 0;
+  color: #29414e;
+}
+
+.stock-section-heading p {
+  margin: 5px 0 0;
+  color: #87969d;
+  font-size: 13px;
+}
+
+.stock-form-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, 1fr);
+  gap: 16px;
+}
+
+.stock-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 15px;
+}
+
+.stock-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #465861;
+}
+
+.stock-field input,
+.stock-field select {
+  border: 1px solid #dce5e8;
+  border-radius: 10px;
+  padding: 12px 13px;
+  outline: none;
+  font-size: 14px;
+  background: white;
+}
+
+.stock-field input:focus,
+.stock-field select:focus {
+  border-color: #087f7c;
+}
+
+.stock-save-button {
+  border: none;
+  background: linear-gradient(
+    135deg,
+    #087f7c,
+    #126f94
+  );
+  color: white;
+  padding: 12px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-weight: 700;
+}
+
+.stock-cancel-button {
+  border: 1px solid #dce5e8;
+  background: white;
+  color: #63747d;
+  padding: 9px 12px;
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.stock-message {
+  padding: 11px 13px;
+  margin-bottom: 18px;
+  border-radius: 9px;
+}
+
+.stock-message.success {
+  background: #e8f8f0;
+  color: #167453;
+}
+
+.stock-message.error {
+  background: #fff0f0;
+  color: #b54141;
+}
+
+.stock-table-wrapper {
+  overflow-x: auto;
+}
+
+.stock-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.stock-table th {
+  text-align: left;
+  padding: 13px;
+  background: #f7fafb;
+  color: #788890;
+  font-size: 12px;
+}
+
+.stock-table td {
+  padding: 14px 13px;
+  border-bottom:
+    1px solid #edf2f3;
+  color: #4c606b;
+}
+
+.stock-table td strong,
+.stock-table td small {
+  display: block;
+}
+
+.stock-table td small {
+  margin-top: 3px;
+  color: #87969d;
+}
+
+.stock-status {
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.stock-status.available {
+  background: #e7f8f0;
+  color: #14845d;
+}
+
+.stock-status.unavailable {
+  background: #fff0f0;
+  color: #bd4848;
+}
+
+.stock-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.stock-edit-button,
+.stock-delete-button {
+  border: none;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stock-edit-button {
+  background: #eaf6f5;
+  color: #087f7c;
+}
+
+.stock-delete-button {
+  background: #fff0f0;
+  color: #b94545;
+}
+
+.stock-loading,
+.stock-empty {
+  padding: 35px;
+  text-align: center;
+  color: #84939a;
+}
+
+@media (max-width: 700px) {
+  .stock-management-page {
+    padding: 18px;
+  }
+
+  .stock-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .stock-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -87,4 +87,3 @@ SELECT p.id, m.id, 90, '245.00'
 FROM pharmacies p JOIN medicines m ON m.name = 'Vitamin C'
 WHERE p.name = 'MediCare Pharmacy' AND p.address = 'Hospital Road'
   AND NOT EXISTS (SELECT 1 FROM pharmacy_stock ps WHERE ps.pharmacy_id = p.id AND ps.medicine_id = m.id);
-
