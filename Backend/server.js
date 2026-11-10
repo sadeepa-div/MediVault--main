@@ -6,6 +6,7 @@ require("dotenv").config();
 
 const db = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
+const pharmacyRoutes = require("./routes/pharmacyRoutes");
 
 const app = express();
 
@@ -18,10 +19,8 @@ app.get("/", (req, res) => {
 
 // Authentication routes
 app.use("/api/auth", authRoutes);
-app.use(
-  "/api/medicines",
-  medicineRoutes
-);
+app.use("/api/medicines", medicineRoutes);
+app.use("/api/pharmacies", pharmacyRoutes);
 
 // Test MySQL connection
 db.query("SELECT 1", (err) => {

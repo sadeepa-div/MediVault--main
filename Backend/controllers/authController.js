@@ -409,9 +409,105 @@ const getCurrentUser = (req, res) => {
   );
 };
 
+const updateCurrentUser = (req, res) => {
+  const fullName = typeof req.body?.fullName === "string"
+    ? req.body.fullName.trim()
+    : "";
+  const rawBirthday = req.body?.birthday;
+  const birthday = rawBirthday === undefined || rawBirthday === null || rawBirthday === ""
+    ? null
+    : rawBirthday;
+  const phone = typeof req.body?.phone === "string"
+    ? req.body.phone.trim() || null
+    : null;
+
+  if (!fullName || fullName.length > 100) {
+    return res.status(400).json({
+      message: "Name is required and must be 100 characters or fewer",
+    });
+  }
+
+  if (birthday !== null) {
+    if (
+      typeof birthday !== "string"
+      || !/^\d{4}-\d{2}-\d{2}$/.test(birthday)
+      || Number.isNaN(new Date(`${birthday}T00:00:00.000Z`).getTime())
+      || new Date(`${birthday}T00:00:00.000Z`).toISOString().slice(0, 10) !== birthday
+    ) {
+      return res.status(400).json({
+        message: "Birthday must be a valid date",
+      });
+    }
+  }
+
+  if (req.body?.phone !== undefined && req.body.phone !== null
+    && typeof req.body.phone !== "string") {
+    return res.status(400).json({
+      message: "Phone must be a string",
+    });
+  }
+
+  if (phone && phone.length > 20) {
+    return res.status(400).json({
+      message: "Phone must be 20 characters or fewer",
+    });
+  }
+
+  db.query(
+    "UPDATE users SET full_name = ?, birthday = ?, phone = ? WHERE id = ?",
+    [fullName, birthday, phone, req.user.id],
+    (updateErr) => {
+      if (updateErr) {
+        console.error(updateErr);
+
+        return res.status(500).json({
+          message: "Could not update profile",
+        });
+      }
+
+      db.query(
+        `SELECT id, full_name, email, birthday, phone, role, created_at
+         FROM users
+         WHERE id = ?`,
+        [req.user.id],
+        (selectErr, results) => {
+          if (selectErr) {
+            console.error(selectErr);
+
+            return res.status(500).json({
+              message: "Could not load updated profile",
+            });
+          }
+
+          if (results.length === 0) {
+            return res.status(404).json({
+              message: "User not found",
+            });
+          }
+
+          const user = results[0];
+          return res.status(200).json({
+            message: "Profile updated successfully",
+            user: {
+              id: user.id,
+              fullName: user.full_name,
+              email: user.email,
+              birthday: user.birthday,
+              phone: user.phone,
+              role: user.role,
+              createdAt: user.created_at,
+            },
+          });
+        },
+      );
+    },
+  );
+};
+
 module.exports = {
   registerUser,
   loginUser,
   googleLogin,
-  getCurrentUser
+  getCurrentUser,
+  updateCurrentUser,
 };
