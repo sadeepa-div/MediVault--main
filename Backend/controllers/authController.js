@@ -19,8 +19,15 @@ const registerUser = async (req, res) => {
       email,
       password,
       birthday,
-      phone
+      phone,
+      role
     } = req.body;
+
+    if (!["user", "admin"].includes(role)) {
+      return res.status(400).json({
+        message: "Invalid role"
+      });
+    }
 
     // Required fields
     if (!fullName || !email || !password) {
@@ -73,7 +80,6 @@ const registerUser = async (req, res) => {
               10
             );
 
-          // Public registration always creates a user, regardless of req.body.role.
           const sql = `
             INSERT INTO users
             (
@@ -85,7 +91,7 @@ const registerUser = async (req, res) => {
               role
             )
 
-            VALUES (?, ?, ?, ?, ?, 'user')
+            VALUES (?, ?, ?, ?, ?, ?)
           `;
 
           db.query(
@@ -95,7 +101,8 @@ const registerUser = async (req, res) => {
               normalizedEmail,
               passwordHash,
               birthday || null,
-              phone?.trim() || null
+              phone?.trim() || null,
+              role
             ],
 
             (insertErr, result) => {
@@ -129,7 +136,7 @@ const registerUser = async (req, res) => {
                     email:
                       normalizedEmail,
 
-                    role: "user"
+                    role
                   }
                 });
             }
