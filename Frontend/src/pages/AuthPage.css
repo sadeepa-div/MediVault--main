@@ -392,7 +392,8 @@ input {
   min-width: 14px;
 }
 
-.input-box input {
+.input-box input,
+.input-box select {
   flex: 1;
 
   height: 100%;
@@ -407,6 +408,14 @@ input {
   color: #2d3e48;
 
   min-width: 0;
+}
+
+.input-box select:disabled {
+  font-family: inherit;
+  color: #2d3e48;
+  -webkit-text-fill-color: #2d3e48;
+  opacity: 1;
+  cursor: not-allowed;
 }
 
 .input-box input::placeholder {
