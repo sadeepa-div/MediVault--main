@@ -99,8 +99,11 @@ function Dashboard() {
           <span>MediVault</span>
         </div>
 
-        <nav>
-          <button className="nav-active">Dashboard</button>
+        <nav className="sidebar-nav">
+          <button className="active" onClick={() => navigate("/dashboard")}>
+            <FaHospital />
+            Dashboard
+          </button>
 
           <button onClick={() => navigate("/medicine-search")}>
             <FaSearch />
@@ -109,7 +112,7 @@ function Dashboard() {
 
           {user?.role === "admin" && (
             <button onClick={() => navigate("/medicine-management")}>
-              <FaBoxes />
+              <FaCapsules />
               Medicine Management
             </button>
           )}
@@ -121,9 +124,21 @@ function Dashboard() {
             </button>
           )}
 
-          <button>
+          {user?.role === "admin" && (
+            <button onClick={() => navigate("/stock-management")}>
+              <FaBoxes />
+              Stock Management
+            </button>
+          )}
+
+          <button onClick={() => navigate("/profile")}>
             <FaUserCircle />
             Profile
+          </button>
+
+          <button onClick={handleLogout}>
+            <FaSignOutAlt />
+            Logout
           </button>
         </nav>
 
@@ -225,6 +240,13 @@ function Dashboard() {
               <button onClick={() => navigate("/pharmacy-management")}>
                 <FaHospital />
                 Manage Pharmacies
+              </button>
+            )}
+
+            {user?.role === "admin" && (
+              <button onClick={() => navigate("/stock-management")}>
+                <FaBoxes />
+                Stock Management
               </button>
             )}
           </div>
