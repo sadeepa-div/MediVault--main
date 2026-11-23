@@ -6,6 +6,7 @@ const {
   getMedicineSummary,
   getAllMedicines,
   searchMedicines,
+  getDashboardStats,
   addMedicine,
   updateMedicine,
   deleteMedicine
@@ -35,6 +36,12 @@ router.get(
   "/search",
   authMiddleware,
   searchMedicines
+);
+
+router.get(
+  "/stats",
+  authMiddleware,
+  getDashboardStats
 );
 
 

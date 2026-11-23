@@ -13,7 +13,9 @@ import {
 
 import "./Dashboard.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "/api";
+const API_URL = (import.meta.env.VITE_API_URL || "/api")
+  .replace(/\\/g, "/")
+  .replace(/\/$/, "");
 
 function Dashboard() {
   const [user, setUser] = useState(null);
@@ -136,10 +138,6 @@ function Dashboard() {
             Profile
           </button>
 
-          <button onClick={handleLogout}>
-            <FaSignOutAlt />
-            Logout
-          </button>
         </nav>
 
         <button className="logout-button" onClick={handleLogout}>
